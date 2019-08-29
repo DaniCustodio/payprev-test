@@ -19,6 +19,17 @@ const create = async userParam => {
 	await user.save()
 }
 
+const auth = async ({ email, password }) => {
+	const user = await User.findOne({ email })
+	if (user && bcrypt.compareSync(password, user.hash)) {
+		const { hash, ...userWithoutHash } = user.toObject()
+		return {
+			...userWithoutHash
+		}
+	}
+}
+
 module.exports = {
-	create
+	create,
+	auth
 }
