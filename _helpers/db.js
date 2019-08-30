@@ -9,5 +9,7 @@ mongoose.connect(process.env.MONGODB_URI || config.connectionString, {
 mongoose.Promise = global.Promise
 
 module.exports = {
-	User: require("../users/user-model")
+	User: require("../users/user-model"),
+	UserGithub: require("../users-github/user-github-model"),
+	Folder: require("../folders/folder-model")
 }
