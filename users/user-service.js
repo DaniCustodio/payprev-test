@@ -3,7 +3,21 @@ const db = require("../_helpers/db")
 const User = db.User
 
 const create = async userParam => {
-	// validate
+	// validate params
+	const cpfregex = /^\d{3}\d{3}\d{3}\d{2}$/
+	if (!cpfregex.test(userParam.cpf)) {
+		throw "Cpf inválido"
+	}
+	const emailregex = /[\w-]+@([\w-]+\.)+[\w-]+/
+	if (!emailregex.test(userParam.email)) {
+		throw "Email inválido"
+	}
+	const passwordregex = /^.{4,12}$/
+	if (!passwordregex.test(userParam.password)) {
+		throw "Senha inválida"
+	}
+
+	// validate database
 	if (await User.findOne({ email: userParam.email })) {
 		throw "Esse email já foi cadastrado"
 	}
