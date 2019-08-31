@@ -1,5 +1,6 @@
 const express = require("express")
 const router = express.Router()
+const authorize = require("../_helpers/authorize")
 const folderService = require("./folder-service")
 
 const create = (req, res, next) => {
@@ -37,10 +38,10 @@ const removeItem = (req, res, next) => {
 		.catch(err => next(err))
 }
 
-router.post("/create", create)
-router.post("/update", update)
-router.post("/additem", additems)
-router.post("/removeitem", removeItem)
-router.post("/", getAll)
+router.post("/create", authorize("user"), create)
+router.post("/update", authorize("user"), update)
+router.post("/additem", authorize("user"), additems)
+router.post("/removeitem", authorize("user"), removeItem)
+router.post("/", authorize("user"), getAll)
 
 module.exports = router

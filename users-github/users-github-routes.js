@@ -1,5 +1,6 @@
 const express = require("express")
 const router = express.Router()
+const authorize = require("../_helpers/authorize")
 const userGithubService = require("./user-github-service")
 
 const getAll = (req, res, next) => {
@@ -24,8 +25,8 @@ const search = (req, res, next) => {
 }
 
 // routes
-router.get("/", getAll)
-router.get("/search", search)
-router.post("/add", add)
+router.get("/", authorize("user"), getAll)
+router.get("/search", authorize("admin"), search)
+router.post("/add", authorize("admin"), add)
 
 module.exports = router
