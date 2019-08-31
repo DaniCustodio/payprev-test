@@ -5,7 +5,10 @@ const User = db.User
 const create = async userParam => {
 	// validate
 	if (await User.findOne({ email: userParam.email })) {
-		throw `Email ${userParam.email} already exist`
+		throw "Esse email já foi cadastrado"
+	}
+	if (await User.findOne({ cpf: userParam.cpf })) {
+		throw "Esse cpf já foi cadastrado"
 	}
 
 	const user = new User(userParam)
