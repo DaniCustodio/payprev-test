@@ -22,6 +22,18 @@ const GITHUBUSER = {
 	html_url: "https://github.com/ulrich"
 }
 
+const authUser = async () => {
+	const response = await request(app)
+		.post("/users/auth")
+		.send({
+			email: USER.email,
+			password: USER.password
+		})
+	token = response.body.token
+}
+
+let token
+
 describe("/folders", () => {
 	let userDb
 	let userGithubDb
@@ -29,6 +41,8 @@ describe("/folders", () => {
 	beforeAll(async () => {
 		await userService.create(USER)
 		await userGithubService.create(GITHUBUSER)
+
+		await authUser()
 
 		userDb = await User.findOne({ email: USER.email })
 		userGithubDb = await UserGithub.findOne({ login: GITHUBUSER.login })
@@ -43,22 +57,26 @@ describe("/folders", () => {
 		await Folder.collection.drop()
 	})
 
-	it("should return a list of the user's folders", async () => {
-		await folderService.create({ name: "folder1", user: userDb.id })
-		await folderService.create({ name: "folder2", user: userDb.id })
+	describe("/", () => {
+		it("should return a list of the user's folders", async () => {
+			await folderService.create({ name: "folder1", user: userDb.id })
+			await folderService.create({ name: "folder2", user: userDb.id })
 
-		const response = await request(app)
-			.post("/folders")
-			.send({ idUser: userDb.id })
+			const response = await request(app)
+				.post("/folders")
+				.set("Authorization", `Bearer ${token}`)
+				.send({ idUser: userDb.id })
 
-		expect(response.status).toBe(200)
-		expect(response.body.length).toBe(2)
+			expect(response.status).toBe(200)
+			expect(response.body.length).toBe(2)
+		})
 	})
 
 	describe("/create", () => {
 		it("should create a folder", async () => {
 			const response = await request(app)
 				.post("/folders/create")
+				.set("Authorization", `Bearer ${token}`)
 				.send({ name: "create folder", user: userDb.id })
 
 			const folderDb = await Folder.findOne({
@@ -74,6 +92,7 @@ describe("/folders", () => {
 
 			const response = await request(app)
 				.post("/folders/create")
+				.set("Authorization", `Bearer ${token}`)
 				.send({ name: "create folder", user: userDb.id })
 
 			expect(response.status).toBe(400)
@@ -92,6 +111,7 @@ describe("/folders", () => {
 
 			const response = await request(app)
 				.post("/folders/update")
+				.set("Authorization", `Bearer ${token}`)
 				.send({ id: folderDb.id, folder: { name: "new folder" } })
 
 			const newFolderDb = await Folder.findById(folderDb.id)
@@ -103,6 +123,7 @@ describe("/folders", () => {
 			Folder.createCollection()
 			const response = await request(app)
 				.post("/folders/update")
+				.set("Authorization", `Bearer ${token}`)
 				.send({ id: "5d6941976c6dd23300d3dani", folder: { name: "folder1" } })
 
 			expect(response.status).toBe(400)
@@ -121,6 +142,7 @@ describe("/folders", () => {
 
 			const response = await request(app)
 				.post("/folders/update")
+				.set("Authorization", `Bearer ${token}`)
 				.send({ id: folderDb.id, folder: { name: "folder1" } })
 
 			expect(response.status).toBe(400)
@@ -139,6 +161,7 @@ describe("/folders", () => {
 
 			const response = await request(app)
 				.post("/folders/additem")
+				.set("Authorization", `Bearer ${token}`)
 				.send({ idFolder: folderDb.id, idUserGithub: userGithubDb.id })
 
 			const newFolderDb = await Folder.findById(folderDb.id)
@@ -152,6 +175,7 @@ describe("/folders", () => {
 			Folder.createCollection()
 			const response = await request(app)
 				.post("/folders/additem")
+				.set("Authorization", `Bearer ${token}`)
 				.send({
 					idFolder: "5d6941976c6dd23300d3ac44",
 					idUserGithub: userGithubDb.id
@@ -173,6 +197,7 @@ describe("/folders", () => {
 
 			const response = await request(app)
 				.post("/folders/additem")
+				.set("Authorization", `Bearer ${token}`)
 				.send({
 					idFolder: folderDb.id,
 					idUserGithub: userGithubDb.id
@@ -198,6 +223,7 @@ describe("/folders", () => {
 
 			const response = await request(app)
 				.post("/folders/removeitem")
+				.set("Authorization", `Bearer ${token}`)
 				.send({ idFolder: folderDb.id, idUserGithub: userGithubDb.id })
 
 			const folderDb0 = await Folder.findById(folderDb.id)
