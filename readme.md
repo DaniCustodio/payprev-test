@@ -13,6 +13,6 @@ No arquivo `config.json` adicione seu banco de dados e o secret
 
 ## Rotas
 
-- [Rota /users]("./users")
-- [Rota /github]("./users-github")
-- [Rota /folders]("./folders")
+- [Rota /users](https://github.com/DaniCustodio/payprev-test/blob/master/users/readme.md)
+- [Rota /github](https://github.com/DaniCustodio/payprev-test/blob/master/users-github/readme.md)
+- [Rota /folders](https://github.com/DaniCustodio/payprev-test/blob/master/folders/readme.md)
