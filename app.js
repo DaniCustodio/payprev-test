@@ -6,6 +6,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
 // api routes
+app.get("/", (req, res) => res.status(200).send())
 app.use("/users", require("./users/users-routes"))
 app.use("/github", require("./users-github/users-github-routes"))
 app.use("/folders", require("./folders/folders-routes"))
